@@ -1,0 +1,1 @@
+[{"Method":"GET","Route":"/swagger","Count":1},{"Method":"GET","Route":"/swagger/index.html","Count":1},{"Method":"GET","Route":"/swagger/index.css","Count":1},{"Method":"GET","Route":"/openapi/v1.json","Count":1},{"Method":"GET","Route":"/api/messages","Count":1}]

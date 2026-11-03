@@ -1,0 +1,31 @@
+@server=https://localhost
+@port=7277
+
+
+GET {{server}}:{{port}}/api/messages
+Accept: application/json
+
+###
+POST {{server}}:{{port}}/api/messages
+Content-Type: application/json
+Accept: application/json
+
+{
+  "FromAddress": "test@ga.com",
+  "Text": "Hello, World!",
+  "DateTime": "2024-06-10T15:00:00"
+}
+
+###
+
+GET {{server}}:{{port}}/api/messages/2
+Accept: application/json
+
+###
+
+GET {{server}}:{{port}}/api/messages?from=anna.ivanova@example.com
+Accept: application/json
+
+###
+DELETE {{server}}:{{port}}/api/messages/2
+Accept: application/json
