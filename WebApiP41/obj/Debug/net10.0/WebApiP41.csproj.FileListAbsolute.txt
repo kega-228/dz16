@@ -68,3 +68,6 @@ C:/Users/evgen/RiderProjects/WebApi67/WebApiP41/bin/Debug/net10.0/Messages.json
 /home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/WebApiP41.pdb
 /home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/WebApiP41.genruntimeconfig.cache
 /home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/ref/WebApiP41.dll
+/home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/WebApiP41.sourcelink.json
+/home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/RouteCounters.json
+/home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/Users.json

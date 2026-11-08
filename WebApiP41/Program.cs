@@ -1,6 +1,7 @@
 using WebApiP41.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApiP41.Middleware;
+using WebApiP41.Models.DTO;
 using WebApiP41.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,9 +25,19 @@ builder.Services.AddSingleton<RouteCounterService>(sp =>
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddSingleton<IDataProvider<User>>(sp =>
+{
+    var dataFile = builder.Configuration["UserService:UsersDataFilePath"];
+    return new UserProvider(dataFile);
+});
+
+builder.Services.AddSingleton<UserService>();
+
+
+
 
 var app = builder.Build();
-
+app.UseMiddleware<CheckUsersMiddleware>();
 app.UseMiddleware<RouteCounterMiddleware>();
 
 if (app.Environment.IsDevelopment())
