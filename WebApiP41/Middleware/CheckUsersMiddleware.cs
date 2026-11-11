@@ -13,8 +13,8 @@ public class CheckUsersMiddleware
         var path = context.Request.Path.Value ?? string.Empty;
         if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) ||
             path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/api/users/register", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/api/users/login", StringComparison.OrdinalIgnoreCase))
+            path.StartsWith("/api/users", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/api/order", StringComparison.OrdinalIgnoreCase)) 
         {
             await _next(context);
             return;

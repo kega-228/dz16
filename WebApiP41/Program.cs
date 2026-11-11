@@ -3,11 +3,31 @@ using Microsoft.AspNetCore.Mvc;
 using WebApiP41.Middleware;
 using WebApiP41.Models.DTO;
 using WebApiP41.Services;
+using System.Reflection;
+using System.IO;
+using System.Collections;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
+
 // додати контролер
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Компілятор кладе XML-файл поруч із dll: <ІмʼяПроєкту>.xml
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+});
+
+builder.Services.AddSingleton<IDataProvider<Order>>(sp =>
+{
+    var dataFile = builder.Configuration["OrderService:OrdersDataFilePath"];
+    return new OrderProvider(dataFile);
+});
+
+builder.Services.AddSingleton<OrderService>();
 
 builder.Services.AddSingleton<IDataProvider<Message>>(sp =>
 {

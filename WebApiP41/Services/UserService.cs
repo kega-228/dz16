@@ -23,4 +23,15 @@ public class UserService(IDataProvider<User> userProvider)
     
     public async Task<User?> GetUserByTokenAsync(string token) =>
         (await userProvider.GetAllAsync()).FirstOrDefault(p => p.Token.Equals(token));
+
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return (await userProvider.GetAllAsync()).ToList();
+    }
+
+    public async Task<User?> GetUserByName(string name)
+    {
+        var users = await userProvider.GetAllAsync();
+        return users.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
 }
