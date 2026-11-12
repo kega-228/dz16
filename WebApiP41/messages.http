@@ -30,14 +30,11 @@ Accept: application/json
 DELETE {{server}}:{{port}}/api/messages/2
 Accept: application/json
 
-###
-
-
-### Получить все заказы
+### 
 GET {{server}}:{{port}}/api/orders
 Accept: application/json
 
-### Добавить заказ
+###
 POST {{server}}:{{port}}/api/orders
 Content-Type: application/json
 
@@ -47,7 +44,7 @@ Content-Type: application/json
   "comment": "Доставка після 18:00"
 }
 
-### Добавить заказ без комментария
+### 
 POST {{server}}:{{port}}/api/orders
 Content-Type: application/json
 
@@ -56,7 +53,7 @@ Content-Type: application/json
   "cost": 10.5
 }
 
-### Невалидный заказ (ожидается 400)
+### 
 POST {{server}}:{{port}}/api/orders
 Content-Type: application/json
 
@@ -65,25 +62,25 @@ Content-Type: application/json
   "cost": 0
 }
 
-### Изменить количество (тело - просто число)
+###
 PUT {{server}}:{{port}}/api/orders/1/quantity
 Content-Type: application/json
 
 5
 
-### Изменить статус на "виконано" (тело - true/false)
+### 
 PUT {{server}}:{{port}}/api/orders/1/status
 Content-Type: application/json
 
 true
 
-### Вернуть статус "не виконано"
+###
 PUT {{server}}:{{port}}/api/orders/1/status
 Content-Type: application/json
 
 false
 
-### Несуществующий заказ (ожидается 404)
+### 
 PUT {{server}}:{{port}}/api/orders/999/quantity
 Content-Type: application/json
 

@@ -80,3 +80,4 @@ C:/Users/evgen/RiderProjects/WebApi67/WebApiP41/bin/Debug/net10.0/Messages.json
 /home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
 /home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/WebApiP41.xml
+/home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/Orders.json
