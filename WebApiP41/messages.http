@@ -9,9 +9,10 @@ Accept: application/json
 POST {{server}}:{{port}}/api/messages
 Content-Type: application/json
 Accept: application/json
+Authorization: Bearer 5608d799-02b3-4fbc-813d-4ae4ba3d96f6
 
 {
-  "FromAddress": "test@ga.com",
+  "FromAddress": "string@string.string",
   "Text": "Hello, World!",
   "DateTime": "2024-06-10T15:00:00"
 }
@@ -20,15 +21,18 @@ Accept: application/json
 
 GET {{server}}:{{port}}/api/messages/2
 Accept: application/json
+Authorization: Bearer 5608d799-02b3-4fbc-813d-4ae4ba3d96f6
 
 ###
 
-GET {{server}}:{{port}}/api/messages?from=anna.ivanova@example.com
+GET {{server}}:{{port}}/api/messages?from=string@string.string
 Accept: application/json
+Authorization: Bearer 5608d799-02b3-4fbc-813d-4ae4ba3d96f6
 
 ###
 DELETE {{server}}:{{port}}/api/messages/2
 Accept: application/json
+Authorization: Bearer 5608d799-02b3-4fbc-813d-4ae4ba3d96f6
 
 ### 
 GET {{server}}:{{port}}/api/orders

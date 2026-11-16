@@ -1,47 +1,40 @@
-﻿using WebApiP41.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApiP41.Models;
 
 namespace WebApiP41.Services;
 
-public class MessageService
+public class MessageService(ApiDbContext dbContext)
 {
-    private readonly IDataProvider<Message> dataProvider;
-
-    public MessageService(IDataProvider<Message> dataFile)
-    {
-        this.dataProvider = dataFile;
-    }
 
     public async Task<List<Message>> GetAllMessagesAsync()
     {
-        var messages = await dataProvider.GetAllAsync();
+        var messages = await dbContext.Messages.ToListAsync();
         return messages.ToList();
     }
 
     public async Task<Message?> GetMessageByIdAsync(int id)
     {
-        var messages = await dataProvider.GetAllAsync();
-        return messages.FirstOrDefault(p => p.Id == id);
+        var message = await dbContext.Messages.FirstOrDefaultAsync(p => p.Id == id);
+        return message;
     }
 
     public async Task<List<Message>?> GetMessagesByFromAsync(string from)
     {
-        var messages = await dataProvider.GetAllAsync();
+        var messages = await dbContext.Messages.ToListAsync();
         return messages.Where(p => p.FromAddress.Equals(from, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     public async Task<Message> AddMessageAsync(Message newMessage)
     {
-        var messages = await dataProvider.GetAllAsync();
-        newMessage.Id = messages.Any() ? messages.Max(p => p.Id) + 1 : 1;
-        messages.Add(newMessage);
-        await dataProvider.SaveAsync(messages);
+        var messages = await dbContext.Messages.ToListAsync();
+        dbContext.Messages.Add(newMessage);
+        await dbContext.SaveChangesAsync();
         return newMessage;
     }
 
     public async Task<Message?> UpdateMessageAsync(int id, Message updatedMessage)
     {
-        var messages = await dataProvider.GetAllAsync();
-        var message = messages.FirstOrDefault(p => p.Id == id);
+        var message = await dbContext.Messages.FirstOrDefaultAsync(p => p.Id == id);
         if (message == null)
         {
             return null;
@@ -49,20 +42,20 @@ public class MessageService
         message.FromAddress = updatedMessage.FromAddress;
         message.Text = updatedMessage.Text;
         message.DateTime = updatedMessage.DateTime;
-        await dataProvider.SaveAsync(messages);
+        await dbContext.SaveChangesAsync();
         return message;
     }
 
     public async Task<bool> DeleteMessageAsync(int id)
     {
-        var messages = await dataProvider.GetAllAsync();
+        var messages = await dbContext.Messages.ToListAsync();
         var message = messages.FirstOrDefault(p => p.Id == id);
         if (message == null)
         {
             return false;
         }
         messages.Remove(message);
-        await dataProvider.SaveAsync(messages);
+        await dbContext.SaveChangesAsync();
         return true;
     }
 }

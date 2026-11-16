@@ -6,8 +6,12 @@ using WebApiP41.Services;
 using System.Reflection;
 using System.IO;
 using System.Collections;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseSqlite(connectionString)); // Використовуємо SQLite
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
 
@@ -27,7 +31,7 @@ builder.Services.AddSingleton<IDataProvider<Order>>(sp =>
     return new OrderProvider(dataFile);
 });
 
-builder.Services.AddSingleton<OrderService>();
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddSingleton<IDataProvider<Message>>(sp =>
 {
@@ -35,7 +39,7 @@ builder.Services.AddSingleton<IDataProvider<Message>>(sp =>
     return new MessageProvider(dataFile);
 });
 
-builder.Services.AddSingleton<MessageService>();
+builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddSingleton<RouteCounterService>(sp =>
 {
@@ -51,7 +55,7 @@ builder.Services.AddSingleton<IDataProvider<User>>(sp =>
     return new UserProvider(dataFile);
 });
 
-builder.Services.AddSingleton<UserService>();
+builder.Services.AddScoped<UserService>();
 
 
 

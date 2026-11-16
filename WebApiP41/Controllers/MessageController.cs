@@ -46,7 +46,7 @@ public class MessageController(MessageService messageService) : ControllerBase
     [Consumes("application/json")]
     [ProducesResponseType(typeof(Message), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> createMessage([FromBody] Message message)
+    public async Task<IActionResult> CreateMessage([FromBody] Message message)
     {
         if (user is null) return Unauthorized();
         await messageService.AddMessageAsync(message);
