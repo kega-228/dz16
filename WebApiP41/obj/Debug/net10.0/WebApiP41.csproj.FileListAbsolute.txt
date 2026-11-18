@@ -82,9 +82,7 @@ C:/Users/evgen/RiderProjects/WebApi67/WebApiP41/bin/Debug/net10.0/Messages.json
 /home/zhenia/RiderProjects/aislop228/WebApiP41/obj/Debug/net10.0/WebApiP41.xml
 /home/zhenia/RiderProjects/aislop228/WebApiP41/bin/Debug/net10.0/Orders.json
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\appsettings.Development.json
-C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\Messages.json
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\RouteCounters.json
-C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\Users.json
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\appsettings.json
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\WebApiP41.staticwebassets.endpoints.json
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\WebApiP41.deps.json
@@ -241,3 +239,5 @@ C:\Users\evgen\RiderProjects\dz16\WebApiP41\obj\Debug\net10.0\WebApiP41.xml
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\obj\Debug\net10.0\WebApiP41.pdb
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\obj\Debug\net10.0\WebApiP41.genruntimeconfig.cache
 C:\Users\evgen\RiderProjects\dz16\WebApiP41\obj\Debug\net10.0\ref\WebApiP41.dll
+C:\Users\evgen\RiderProjects\dz16\WebApiP41\bin\Debug\net10.0\WebApiP41.staticwebassets.runtime.json
+C:\Users\evgen\RiderProjects\dz16\WebApiP41\obj\Debug\net10.0\compressed\tinxzux3xw-{0}-m2jtk00sz1-m2jtk00sz1.gz

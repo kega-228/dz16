@@ -12,4 +12,5 @@ public class ApiDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<Category> Categories{get;set;}
 }

@@ -26,6 +26,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<CategoryService>();
 
 builder.Services.AddSingleton<RouteCounterService>(sp =>
 {
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseStaticFiles();
 app.MapControllers();
 app.Run();
 

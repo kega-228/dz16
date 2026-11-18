@@ -11,10 +11,7 @@ public class CheckUsersMiddleware
     public async Task InvokeAsync(HttpContext context, UserService service)
     {
         var path = context.Request.Path.Value ?? string.Empty;
-        if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/api/users", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/api/order", StringComparison.OrdinalIgnoreCase)) 
+        if (!path.StartsWith("/api/messages", StringComparison.OrdinalIgnoreCase))
         {
             await _next(context);
             return;

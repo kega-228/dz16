@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Категорії</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1d2330; --muted: #6b7385;
+    --border: #dde1e8; --accent: #2f6fed; --accent-text: #ffffff;
+    --danger: #d64545; --ok: #1f9d55;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171f; --card: #1d212c; --text: #e8ebf2; --muted: #98a0b3;
+      --border: #2d3342; --accent: #5b8cff; --accent-text: #0e1220;
+      --danger: #ff6b6b; --ok: #4cd08a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 24px; margin: 0 0 20px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 20px;
+  }
+  .card h2 { font-size: 16px; margin: 0 0 12px; }
+  .row { display: flex; gap: 8px; }
+  input[type=text], input[type=number], select {
+    padding: 9px 12px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--bg); color: var(--text); font-size: 15px;
+    font-family: inherit;
+  }
+  input[type=text] { flex: 1; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button {
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); cursor: pointer; font-size: 14px;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  button.danger { color: var(--danger); }
+  button.danger:hover { border-color: var(--danger); }
+  button:disabled { opacity: .5; cursor: default; }
+
+  /* фільтри */
+  .toolbar {
+    display: grid; gap: 12px; margin-bottom: 12px;
+    grid-template-columns: 110px 1fr 1fr 110px auto;
+    align-items: end;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .field label { font-size: 12px; color: var(--muted); }
+  .field input, .field select { width: 100%; }
+  @media (max-width: 720px) {
+    .toolbar { grid-template-columns: 1fr 1fr; }
+    .toolbar .field.name { grid-column: 1 / -1; }
+  }
+
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--text); }
+  th.sortable.active { color: var(--accent); }
+  td.actions { white-space: nowrap; text-align: right; }
+  td.actions button { margin-left: 4px; }
+  td input[type=text] { width: 100%; }
+  .muted { color: var(--muted); }
+  .empty { text-align: center; padding: 20px; color: var(--muted); }
+  #status { min-height: 20px; margin-bottom: 12px; font-size: 14px; }
+  #status.ok { color: var(--ok); }
+  #status.err { color: var(--danger); }
+
+  /* пагінація */
+  .pager {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+    align-items: center; margin-top: 14px;
+  }
+  .pager-info { font-size: 13px; color: var(--muted); }
+  .pages { display: flex; flex-wrap: wrap; gap: 4px; }
+  .pages button { min-width: 36px; padding: 6px 10px; }
+  .pages button.current { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .pages .dots { padding: 6px 4px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Категорії</h1>
+
+  <div id="status"></div>
+
+  <div class="card">
+    <h2>Нова категорія</h2>
+    <div class="row">
+      <input type="text" id="newName" placeholder="Назва категорії" maxlength="200">
+      <button class="primary" id="addBtn">Додати</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="margin:0">Усі категорії</h2>
+      <button id="reloadBtn">Оновити</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="field">
+        <label for="filterId">ID</label>
+        <input type="number" id="filterId" min="1" placeholder="Усі">
+      </div>
+      <div class="field name">
+        <label for="filterName">Назва містить</label>
+        <input type="text" id="filterName" placeholder="Пошук за назвою">
+      </div>
+      <div class="field">
+        <label for="sortSelect">Сортування</label>
+        <select id="sortSelect">
+          <option value="Id">ID ↑ (за зростанням)</option>
+          <option value="-Id">ID ↓ (за спаданням)</option>
+          <option value="Name">Назва А → Я</option>
+          <option value="-Name">Назва Я → А</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pageSizeSelect">На сторінці</label>
+        <select id="pageSizeSelect">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <button id="resetBtn" title="Скинути фільтри та сортування">Скинути</button>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="Id" id="thId">ID</th>
+            <th class="sortable" data-sort="Name" id="thName">Назва</th>
+            <th>Створено</th>
+            <th>Змінено</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <div class="pager-info" id="pagerInfo"></div>
+      <div class="pages" id="pages"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Якщо сторінка відкривається не з того ж сервера, що й API,
+  // вкажіть повну адресу, напр. "https://localhost:5001/api/categories"
+  const API_URL = "/api/categories";
+
+  const tbody = document.getElementById("tbody");
+  const statusEl = document.getElementById("status");
+  const newName = document.getElementById("newName");
+  const addBtn = document.getElementById("addBtn");
+  const filterId = document.getElementById("filterId");
+  const filterName = document.getElementById("filterName");
+  const sortSelect = document.getElementById("sortSelect");
+  const pageSizeSelect = document.getElementById("pageSizeSelect");
+  const pagesEl = document.getElementById("pages");
+  const pagerInfo = document.getElementById("pagerInfo");
+
+  // Стан таблиці: те, що відправляється на сервер
+  const state = {
+    page: 1,
+    pageSize: 10,
+    orderBy: "Id",
+    id: "",
+    name: ""
+  };
+
+  // Відповідь сервера (PageResult)
+  let categories = [];
+  let totalItems = 0;
+  let totalPages = 0;
+
+  let editingId = null;
+  let statusTimer = null;
+  let filterTimer = null;
+  let requestSeq = 0; // щоб ігнорувати застарілі відповіді
+
+  function showStatus(msg, isError) {
+    statusEl.textContent = msg;
+    statusEl.className = isError ? "err" : "ok";
+    clearTimeout(statusTimer);
+    if (!isError) statusTimer = setTimeout(() => { statusEl.textContent = ""; }, 3000);
+  }
+
+  function formatDate(value) {
+    const d = new Date(value);
+    return isNaN(d) ? "" : d.toLocaleString("uk-UA");
+  }
+
+  async function request(url, options) {
+    const res = await fetch(url, options);
+    if (!res.ok) {
+      let details = "";
+      try { details = (await res.text()).slice(0, 200); } catch {}
+      throw new Error(`Помилка ${res.status}${details ? ": " + details : ""}`);
+    }
+    return res;
+  }
+
+  // Формуємо query: ?Page=1&PageSize=10&OrderBy=Id&Filter.Name=abc&Filter.Id=5
+  function buildUrl() {
+    const p = new URLSearchParams();
+    p.set("Page", state.page);
+    p.set("PageSize", state.pageSize);
+    if (state.orderBy) p.set("OrderBy", state.orderBy);
+    if (state.name) p.set("Filter.Name", state.name);
+    if (state.id) p.set("Filter.Id", state.id);
+    return `${API_URL}?${p.toString()}`;
+  }
+
+  // ---------- READ ----------
+  async function loadCategories() {
+    const seq = ++requestSeq;
+    try {
+      const res = await request(buildUrl());
+      const data = await res.json();
+      if (seq !== requestSeq) return;
+
+      categories = data.items ?? [];
+      totalItems = data.totalItems ?? 0;
+      totalPages = data.totalPages ?? 0;
+
+      // якщо після видалення/фільтра поточна сторінка стала порожньою — повертаємось назад
+      if (categories.length === 0 && totalPages > 0 && state.page > totalPages) {
+        state.page = totalPages;
+        return loadCategories();
+      }
+      render();
+    } catch (e) {
+      if (seq !== requestSeq) return;
+      showStatus("Не вдалося завантажити категорії. " + e.message, true);
+    }
+  }
+
+  // ---------- CREATE ----------
+  async function addCategory() {
+    const name = newName.value.trim();
+    if (!name) { showStatus("Введіть назву категорії", true); return; }
+    addBtn.disabled = true;
+    try {
+      await request(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+      newName.value = "";
+      showStatus("Категорію додано");
+      await loadCategories();
+    } catch (e) {
+      showStatus("Не вдалося додати. " + e.message, true);
+    } finally {
+      addBtn.disabled = false;
+    }
+  }
+
+  // ---------- UPDATE ----------
+  async function saveCategory(id, name) {
+    name = name.trim();
+    if (!name) { showStatus("Назва не може бути порожньою", true); return; }
+    try {
+      // Контролер приймає [FromBody] string name — тому надсилаємо JSON-рядок: "Назва"
+      await request(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(name)
+      });
+      editingId = null;
+      showStatus("Категорію змінено");
+      await loadCategories();
+    } catch (e) {
+      showStatus("Не вдалося зберегти. " + e.message, true);
+    }
+  }
+
+  // ---------- DELETE ----------
+  async function deleteCategory(id, name) {
+    if (!confirm(`Видалити категорію "${name}"?`)) return;
+    try {
+      await request(`${API_URL}/${id}`, { method: "DELETE" });
+      showStatus("Категорію видалено");
+      await loadCategories();
+    } catch (e) {
+      showStatus("Не вдалося видалити. " + e.message, true);
+    }
+  }
+
+  // ---------- FILTER / SORT / PAGE ----------
+  function goToPage(page) {
+    if (page < 1 || (totalPages && page > totalPages) || page === state.page) return;
+    state.page = page;
+    editingId = null;
+    loadCategories();
+  }
+
+  function applyFilters() {
+    state.id = filterId.value.trim();
+    state.name = filterName.value.trim();
+    state.page = 1;
+    editingId = null;
+    loadCategories();
+  }
+
+  function setSort(orderBy) {
+    state.orderBy = orderBy;
+    sortSelect.value = orderBy;
+    state.page = 1;
+    editingId = null;
+    loadCategories();
+  }
+
+  // Клік по заголовку: ASC → DESC → ASC ...
+  function toggleSort(field) {
+    setSort(state.orderBy === field ? "-" + field : field);
+  }
+
+  function resetAll() {
+    filterId.value = "";
+    filterName.value = "";
+    sortSelect.value = "Id";
+    pageSizeSelect.value = "10";
+    state.id = "";
+    state.name = "";
+    state.orderBy = "Id";
+    state.pageSize = 10;
+    state.page = 1;
+    editingId = null;
+    loadCategories();
+  }
+
+  // ---------- RENDER ----------
+  function cell(text, className) {
+    const td = document.createElement("td");
+    td.textContent = text;
+    if (className) td.className = className;
+    return td;
+  }
+
+  function button(label, className, onClick) {
+    const b = document.createElement("button");
+    b.textContent = label;
+    if (className) b.className = className;
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  function renderHeaders() {
+    const field = state.orderBy.replace("-", "");
+    const desc = state.orderBy.startsWith("-");
+    for (const th of document.querySelectorAll("th.sortable")) {
+      const f = th.dataset.sort;
+      const base = f === "Id" ? "ID" : "Назва";
+      const active = f === field;
+      th.classList.toggle("active", active);
+      th.textContent = base + (active ? (desc ? " ↓" : " ↑") : "");
+    }
+  }
+
+  function pageNumbers() {
+    // 1 … 4 5 [6] 7 8 … 20
+    const result = [];
+    const cur = state.page;
+    const add = (n) => { if (n >= 1 && n <= totalPages && !result.includes(n)) result.push(n); };
+    add(1);
+    for (let i = cur - 2; i <= cur + 2; i++) add(i);
+    add(totalPages);
+    result.sort((a, b) => a - b);
+
+    const out = [];
+    for (let i = 0; i < result.length; i++) {
+      if (i > 0 && result[i] - result[i - 1] > 1) out.push("...");
+      out.push(result[i]);
+    }
+    return out;
+  }
+
+  function renderPager() {
+    pagesEl.innerHTML = "";
+
+    if (totalItems === 0) {
+      pagerInfo.textContent = "";
+      return;
+    }
+
+    const from = (state.page - 1) * state.pageSize + 1;
+    const to = Math.min(state.page * state.pageSize, totalItems);
+    pagerInfo.textContent = `Показано ${from}–${to} з ${totalItems} · сторінка ${state.page} з ${totalPages}`;
+
+    if (totalPages <= 1) return;
+
+    const prev = button("‹", "", () => goToPage(state.page - 1));
+    prev.disabled = state.page <= 1;
+    prev.title = "Попередня";
+    pagesEl.appendChild(prev);
+
+    for (const p of pageNumbers()) {
+      if (p === "...") {
+        const s = document.createElement("span");
+        s.className = "dots";
+        s.textContent = "…";
+        pagesEl.appendChild(s);
+      } else {
+        pagesEl.appendChild(button(String(p), p === state.page ? "current" : "", () => goToPage(p)));
+      }
+    }
+
+    const next = button("›", "", () => goToPage(state.page + 1));
+    next.disabled = state.page >= totalPages;
+    next.title = "Наступна";
+    pagesEl.appendChild(next);
+  }
+
+  function render() {
+    renderHeaders();
+    renderPager();
+    tbody.innerHTML = "";
+
+    if (categories.length === 0) {
+      const tr = document.createElement("tr");
+      const filtered = state.id || state.name;
+      const td = cell(filtered ? "Нічого не знайдено за цими фільтрами" : "Категорій поки немає", "empty");
+      td.colSpan = 5;
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    for (const c of categories) {
+      const tr = document.createElement("tr");
+      tr.appendChild(cell(c.id, "muted"));
+
+      const nameTd = document.createElement("td");
+      const actionsTd = document.createElement("td");
+      actionsTd.className = "actions";
+
+      if (editingId === c.id) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = c.name;
+        input.maxLength = 200;
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") saveCategory(c.id, input.value);
+          if (e.key === "Escape") { editingId = null; render(); }
+        });
+        nameTd.appendChild(input);
+        actionsTd.appendChild(button("Зберегти", "primary", () => saveCategory(c.id, input.value)));
+        actionsTd.appendChild(button("Скасувати", "", () => { editingId = null; render(); }));
+        setTimeout(() => input.focus(), 0);
+      } else {
+        nameTd.textContent = c.name;
+        actionsTd.appendChild(button("Редагувати", "", () => { editingId = c.id; render(); }));
+        actionsTd.appendChild(button("Видалити", "danger", () => deleteCategory(c.id, c.name)));
+      }
+
+      tr.appendChild(nameTd);
+      tr.appendChild(cell(formatDate(c.createdAt), "muted"));
+      tr.appendChild(cell(formatDate(c.updatedAt), "muted"));
+      tr.appendChild(actionsTd);
+      tbody.appendChild(tr);
+    }
+  }
+
+  // ---------- EVENTS ----------
+  addBtn.addEventListener("click", addCategory);
+  newName.addEventListener("keydown", (e) => { if (e.key === "Enter") addCategory(); });
+  document.getElementById("reloadBtn").addEventListener("click", loadCategories);
+  document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+  // фільтри застосовуються з невеликою затримкою після введення
+  function debouncedFilter() {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(applyFilters, 350);
+  }
+  filterName.addEventListener("input", debouncedFilter);
+  filterId.addEventListener("input", debouncedFilter);
+
+  sortSelect.addEventListener("change", () => setSort(sortSelect.value));
+  pageSizeSelect.addEventListener("change", () => {
+    state.pageSize = parseInt(pageSizeSelect.value, 10);
+    state.page = 1;
+    editingId = null;
+    loadCategories();
+  });
+  for (const th of document.querySelectorAll("th.sortable")) {
+    th.addEventListener("click", () => toggleSort(th.dataset.sort));
+  }
+
+  loadCategories();
+</script>
+</body>
+</html>
